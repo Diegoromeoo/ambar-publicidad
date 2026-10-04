@@ -1,26 +1,466 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+   Ámbar Publicidad — Design tokens
+   Obsidiana (#0F1115 · #181A20 · #21252C) · Oro metálico (#D4AF37 · #C5A059)
+   Ámbar (#F59E0B) · Blanco y gris plata (#FFFFFF · #E5E7EB)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+  --color-obsidian-950: #0a0b0e;
+  --color-obsidian-900: #0f1115;
+  --color-obsidian-800: #181a20;
+  --color-obsidian-700: #21252c;
+  --color-obsidian-600: #2c313a;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-gold-100: #f6eac3;
+  --color-gold-200: #efd88e;
+  --color-gold-300: #e6c35c;
+  --color-gold-400: #d4af37;
+  --color-gold-500: #c5a059;
+  --color-gold-600: #a8812b;
+  --color-gold-700: #7c5f20;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-ambar: #f59e0b;
+  --color-silver: #e5e7eb;
+  --color-mist: #a1a7b3;
+  --color-whatsapp: #25d366;
+
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 48s) linear infinite;
+  --animate-spin-slow: spin 140s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-ping-slow: ping-slow 2.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes marquee {
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+  @keyframes ping-slow {
+    75%, 100% { transform: scale(2.6); opacity: 0; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --font-display: var(--font-cormorant), "Libre Baskerville", Baskerville, Georgia, serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ───────────────────────────── Base ───────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-tap-highlight-color: transparent;
+    color-scheme: dark;
+    scrollbar-color: var(--color-obsidian-600) var(--color-obsidian-900);
+  }
+  body {
+    background-color: var(--color-obsidian-900);
+    color: var(--color-silver);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: rgb(212 175 55 / 0.35);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 3px;
+  }
+  /* Animaciones en pausa: solo si el visitante lo elige con el interruptor "Animaciones"
+     (o si lib/motion.ts → respectSystemReducedMotion = true y el sistema pide reducir movimiento). */
+  html[data-motion="reduced"] {
+    scroll-behavior: auto;
+  }
+  html[data-motion="reduced"] *,
+  html[data-motion="reduced"] *::before,
+  html[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─────────────────────────── Utilities ─────────────────────────── */
+@utility text-gold {
+  background-image: linear-gradient(100deg, #f7e08f 0%, #d4af37 28%, #a8812b 52%, #f0d78c 74%, #c5a059 100%);
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility text-gold-animated {
+  background-image: linear-gradient(100deg, #c5a059 0%, #f7e08f 18%, #d4af37 36%, #a8812b 55%, #f0d78c 75%, #c5a059 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-sweep 7s ease-in-out infinite;
+}
+@utility bg-gold {
+  background-image: linear-gradient(135deg, #f3dc94 0%, #d4af37 40%, #b38a2e 68%, #e9c866 100%);
+}
+@utility bg-gold-soft {
+  background-image: linear-gradient(135deg, rgb(212 175 55 / 0.16), rgb(245 158 11 / 0.06) 60%, transparent);
+}
+@utility glass {
+  background-color: rgb(24 26 32 / 0.64);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+@utility hairline-gradient {
+  background-image: linear-gradient(90deg, transparent, rgb(212 175 55 / 0.45), transparent);
+}
+@utility pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+/* ─────────────────────── Escala de sombras ───────────────────────
+   Profundidad consistente en distintas secciones: tarjetas (sm), paneles
+   (md), elementos flotantes/sticky (lg) y overlays por encima de todo (xl). */
+@utility shadow-luxe-sm {
+  box-shadow: 0 14px 30px -20px rgb(0 0 0 / 0.65), 0 2px 8px -4px rgb(0 0 0 / 0.35);
+}
+@utility shadow-luxe-md {
+  box-shadow: 0 26px 50px -24px rgb(0 0 0 / 0.7), 0 4px 14px -6px rgb(0 0 0 / 0.4);
+}
+@utility shadow-luxe-lg {
+  box-shadow: 0 40px 70px -28px rgb(0 0 0 / 0.78), 0 8px 20px -8px rgb(0 0 0 / 0.45);
+}
+@utility shadow-luxe-xl {
+  box-shadow: 0 55px 110px -30px rgb(0 0 0 / 0.88), 0 12px 32px -10px rgb(0 0 0 / 0.5);
+}
+@utility shadow-card-hover {
+  box-shadow: 0 36px 64px -26px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(212 175 55 / 0.22), 0 0 40px -12px rgb(212 175 55 / 0.3);
+}
+@utility shadow-gold-ring {
+  box-shadow: 0 10px 24px -10px rgb(212 175 55 / 0.55), 0 0 0 1px rgb(212 175 55 / 0.2);
+}
+
+@keyframes gold-sweep {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ─────────────────────── Logo (máscaras SVG) ─────────────────────── */
+/* El logo real (extraído del PDF vectorial) se usa como máscara para poder
+   pintarlo con degradados de oro, brillos animados o cualquier color. */
+.brand-mask {
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+}
+.brand-wordmark { --mask: url(/brand/wordmark.svg); aspect-ratio: 1041.7 / 322.8; }
+.brand-lockup { --mask: url(/brand/lockup.svg); aspect-ratio: 1045.7 / 567.8; }
+.brand-mandala { --mask: url(/brand/mandala.svg); aspect-ratio: 761.2 / 754; }
+
+.foil {
+  background-image: linear-gradient(115deg, #8c6a22 0%, #f7e08f 22%, #c9a13a 38%, #fff4c8 50%, #b8902f 62%, #f0d78c 78%, #7c5f20 100%);
+  background-size: 260% 260%;
+  background-position: var(--foil-x, 30%) var(--foil-y, 50%);
+}
+
+/* ─────────────────────── Textura de papel (grano) ─────────────────────── */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─────────────────────── Animaciones de entrada ─────────────────────── */
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.08em 0.14em;
+  margin: 0 -0.08em -0.14em;
+}
+.word-mask > span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 108%, 0) rotate(5deg);
+  transform-origin: 0% 100%;
+  filter: blur(8px);
+  animation: word-in 1.15s var(--ease-luxe) forwards;
+  animation-delay: calc(var(--i, 0) * 75ms + var(--base, 120ms));
+}
+@keyframes word-in {
+  to { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); filter: blur(0); }
+}
+.fade-up {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  animation: fade-up 1s var(--ease-luxe) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes fade-up {
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition: opacity 0.9s var(--ease-luxe), transform 0.9s var(--ease-luxe);
+  transition-delay: var(--d, 0ms);
+}
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─────────────────────── Gradient mesh del hero ─────────────────────── */
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.mesh-a {
+  background: radial-gradient(closest-side, rgb(212 175 55 / 0.38), rgb(212 175 55 / 0.08) 55%, transparent);
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+.mesh-b {
+  background: radial-gradient(closest-side, rgb(245 158 11 / 0.26), rgb(245 158 11 / 0.05) 55%, transparent);
+  animation: drift-b 26s ease-in-out infinite alternate;
+}
+.mesh-c {
+  background: radial-gradient(closest-side, rgb(124 95 32 / 0.55), rgb(124 95 32 / 0.1) 60%, transparent);
+  animation: drift-c 30s ease-in-out infinite alternate;
+}
+@keyframes drift-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-10%, 8%, 0) scale(1.12); }
+  100% { transform: translate3d(6%, -6%, 0) scale(0.94); }
+}
+@keyframes drift-b {
+  0% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(12%, -8%, 0) scale(0.92); }
+  100% { transform: translate3d(-6%, 5%, 0) scale(1.1); }
+}
+@keyframes drift-c {
+  0% { transform: translate3d(0, 0, 0) scale(0.95); }
+  100% { transform: translate3d(-8%, -10%, 0) scale(1.15); }
+}
+
+/* ─────────────────────── Botones ─────────────────────── */
+.btn-gold {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #17130a;
+  background-image: linear-gradient(135deg, #f3dc94 0%, #d4af37 42%, #b38a2e 70%, #e9c866 100%);
+  box-shadow:
+    0 20px 40px -16px rgb(212 175 55 / 0.55),
+    0 8px 18px -8px rgb(0 0 0 / 0.45),
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 rgb(0 0 0 / 0.15);
+  transition: transform 0.35s var(--ease-luxe), box-shadow 0.35s var(--ease-luxe), filter 0.35s;
+}
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  inset: -30% auto -30% 0;
+  width: 38%;
+  z-index: -1;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: btn-shine 5.5s var(--ease-luxe) infinite;
+  animation-delay: var(--shine-delay, 1.2s);
+}
+@media (hover: hover) {
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 30px 56px -18px rgb(212 175 55 / 0.75),
+      0 10px 22px -8px rgb(0 0 0 / 0.5),
+      inset 0 1px 0 rgb(255 255 255 / 0.55);
+  }
+}
+.btn-gold:active { transform: translateY(0) scale(0.98); }
+@keyframes btn-shine {
+  0% { transform: translateX(-160%) skewX(-18deg); }
+  45%, 100% { transform: translateX(330%) skewX(-18deg); }
+}
+
+.btn-ghost {
+  position: relative;
+  color: var(--color-silver);
+  background: rgb(255 255 255 / 0.03);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: background 0.3s, box-shadow 0.3s, color 0.3s, transform 0.35s var(--ease-luxe);
+}
+@media (hover: hover) {
+  .btn-ghost:hover {
+    color: #fff;
+    background: rgb(212 175 55 / 0.08);
+    box-shadow: inset 0 0 0 1px rgb(212 175 55 / 0.55);
+  }
+}
+.btn-ghost:active { transform: scale(0.98); }
+
+/* ─────────────────────── Tarjetas con spotlight / glare ─────────────────────── */
+.spotlight {
+  --x: 50%;
+  --y: 50%;
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--x) var(--y), rgb(240 215 140 / 0.12), transparent 42%);
+  opacity: 0;
+  transition: opacity 0.45s;
+}
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: radial-gradient(300px circle at var(--x) var(--y), rgb(240 215 140 / 0.75), rgb(212 175 55 / 0.15) 45%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.45s;
+}
+@media (hover: hover) {
+  .spotlight:hover::before,
+  .spotlight:hover::after { opacity: 1; }
+}
+
+/* Borde con luz que recorre el contorno (tarjeta de cotización) */
+.border-beam {
+  position: relative;
+  isolation: isolate;
+}
+.border-beam::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--beam-angle, 0deg), transparent 0 70%, rgb(240 215 140 / 0.95) 82%, rgb(245 158 11 / 0.6) 88%, transparent 95%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: beam 6s linear infinite;
+}
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes beam {
+  to { --beam-angle: 360deg; }
+}
+
+/* ─────────────────────── Marquee ─────────────────────── */
+.marquee {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+@media (hover: hover) {
+  .marquee:hover .animate-marquee { animation-play-state: paused; }
+}
+
+/* ─────────────────────── Dock social ─────────────────────── */
+.social-dock {
+  transition: transform 0.6s var(--ease-luxe), opacity 0.5s var(--ease-luxe);
+}
+.social-dock[data-visible="false"],
+html[data-quote-bar="on"] .social-dock,
+html[data-cookie-pending="on"] .social-dock {
+  transform: translate3d(0, 150%, 0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─────────────────────── Mapa (Leaflet, estilo oscuro) ─────────────────────── */
+.leaflet-container {
+  background: var(--color-obsidian-800) !important;
+  font-family: var(--font-sans) !important;
+}
+.leaflet-control-zoom a {
+  background: rgb(24 26 32 / 0.9) !important;
+  color: var(--color-gold-300) !important;
+  border-color: rgb(255 255 255 / 0.08) !important;
+}
+.leaflet-control-zoom a:hover { background: var(--color-obsidian-700) !important; }
+.leaflet-bar { border: 1px solid rgb(255 255 255 / 0.1) !important; box-shadow: none !important; }
+.leaflet-control-attribution {
+  background: rgb(15 17 21 / 0.75) !important;
+  color: #7d838f !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: var(--color-gold-500) !important; }
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--color-obsidian-800) !important;
+  color: var(--color-silver) !important;
+  box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.8) !important;
+  border: 1px solid rgb(212 175 55 / 0.3);
+}
+.leaflet-popup-content { margin: 14px 16px !important; font-size: 13px; line-height: 1.5; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--color-gold-400) !important; }
+.ambar-pin { position: relative; width: 22px; height: 22px; }
+.ambar-pin span {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--color-gold-400);
+  box-shadow: 0 0 0 4px rgb(212 175 55 / 0.25), 0 0 24px 6px rgb(245 158 11 / 0.55);
+}
+.ambar-pin::before,
+.ambar-pin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid rgb(240 215 140 / 0.8);
+  animation: ping-slow 2.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.ambar-pin::after { animation-delay: 1.4s; }
+
+@keyframes scroll-cue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+/* Teselas de OpenStreetMap oscurecidas con tono cálido (sin API key) */
+.ambar-map .leaflet-tile-pane {
+  filter: grayscale(1) invert(1) brightness(0.78) contrast(1.12) sepia(0.28) saturate(1.3);
+}
+
+/* Recorte decorativo que NO crea contenedor de scroll (overflow: hidden sí puede desplazarse al enfocar elementos) */
+.clip-safe {
+  overflow: hidden;
+}
+@supports (overflow: clip) {
+  .clip-safe {
+    overflow: clip;
+  }
 }

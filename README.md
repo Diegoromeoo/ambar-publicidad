@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ámbar Publicidad — Sitio web
 
-## Getting Started
+Sitio de conversión para **Ámbar Publicidad** (imprenta premium en Guadalajara, Jalisco): convierte el tráfico de Instagram, TikTok y Facebook en conversaciones de WhatsApp y visitas al taller.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Motion 13 · Lucide · Leaflet
+
+## Cómo correrlo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # pruebas del motor de precios
+npm run build      # build de producción
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Dónde editar cada cosa
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Qué | Archivo |
+| --- | --- |
+| WhatsApp, teléfono, redes, dirección, coordenadas, horario, estacionamiento | `lib/site.ts` |
+| 💰 Precios del **cotizador** (precio base, materiales, acabados, descuentos por volumen, amplitud del rango) | `lib/pricing.ts` |
+| Productos del **catálogo** (textos, fotos, configuración base) | `lib/catalog.ts` |
+| Directorio técnico (tiempos, mínimos, especificaciones, opciones para agencias) | `lib/directory.ts` |
+| Videos del taller y pasos del proceso | `lib/showcase.ts` |
+| Colores, tipografías y efectos | `app/globals.css` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Los precios "Desde" del catálogo se **calculan con el mismo motor del cotizador** (usando la configuración `quote` de cada producto), así el catálogo y el cotizador siempre coinciden. Para fijar un precio manual, agrega `from` en el `price` del producto.
 
-## Learn More
+## Pendientes antes de publicar ⚠️
 
-To learn more about Next.js, take a look at the following resources:
+- `lib/site.ts`: **dirección, colonia, CP, coordenadas del local** (`exact: true` activa el pin en el mapa), **horario** y **estacionamiento** son de referencia.
+- `lib/directory.ts`: especificaciones técnicas, tiempos y mínimos son valores típicos de la industria; valídalos con el taller.
+- `lib/pricing.ts`: precios de referencia; ajústalos a la lista real.
+- Fotos y videos: vienen de las carpetas `IMAGENES` y `VIDEOS` (stock de Pexels). Para usar fotos reales de trabajos terminados, reemplaza los archivos en `assets/images/` o `public/media/` con el mismo nombre (o cambia los imports en `lib/catalog.ts`).
+- Al publicar, define `NEXT_PUBLIC_SITE_URL` con el dominio final (en Vercel se usa el dominio de producción automáticamente).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Recursos de marca
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El logo se extrajo **en vector** del PDF original (`LOGO/Ambar Publicidad Logo.pdf`) a `public/brand/` (`wordmark.svg`, `lockup.svg`, `mandala.svg`). Se usa como máscara CSS, por eso puede pintarse en oro, foil animado o cualquier color. El favicon (`app/icon.svg`) y la imagen para redes (`app/opengraph-image.jpg`) salen del mismo logo.
